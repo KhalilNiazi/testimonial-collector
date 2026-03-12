@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leave a Review</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f0f4f8 0%, #e8f5e9 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .card-header .icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .card-header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #1c1c1e;
+      margin-bottom: 6px;
+    }
+
+    .card-header p {
+      font-size: 0.92rem;
+      color: #6b7280;
+    }
+
+    .form-group {
+      margin-bottom: 22px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #1c1c1e;
+      background: #f9fafb;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      resize: vertical;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus {
+      border-color: #1dbf73;
+      box-shadow: 0 0 0 3px rgba(29, 191, 115, 0.18);
+      background: #ffffff;
+    }
+
+    textarea {
+      min-height: 110px;
+    }
+
+    /* ── Star Rating ── */
+    .star-group {
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .star-group input[type="radio"] {
+      display: none;
+    }
+
+    .star-group label {
+      font-size: 2.2rem;
+      color: #d1d5db;
+      cursor: pointer;
+      transition: color 0.15s, transform 0.15s;
+      line-height: 1;
+      user-select: none;
+    }
+
+    /* Hover: highlight hovered star and all stars after it (visually to the left) */
+    .star-group label:hover,
+    .star-group label:hover ~ label {
+      color: #ffb33e;
+      transform: scale(1.18);
+    }
+
+    /* Selected: fill star and all stars after it */
+    .star-group input[type="radio"]:checked ~ label {
+      color: #ffb33e;
+    }
+
+    /* Keep filled stars highlighted on hover of any star in the row */
+    .star-group:hover label {
+      color: #d1d5db;
+    }
+
+    .star-group:hover label:hover,
+    .star-group:hover label:hover ~ label {
+      color: #ffb33e;
+      transform: scale(1.18);
+    }
+
+    .error-msg {
+      font-size: 0.8rem;
+      color: #ef4444;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .error-msg.visible {
+      display: block;
+    }
+
+    /* ── Submit Button ── */
+    .btn-submit {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: #1dbf73;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn-submit:hover {
+      background: #19a463;
+      box-shadow: 0 4px 14px rgba(29, 191, 115, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active {
+      background: #168a54;
+      transform: translateY(0);
+      box-shadow: none;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 520px) {
+      .card {
+        padding: 28px 20px;
+      }
+
+      .card-header h1 {
+        font-size: 1.35rem;
+      }
+
+      .star-group label {
+        font-size: 1.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="card-header">
+      <div class="icon">⭐</div>
+      <h1>Share Your Experience</h1>
+      <p>Your feedback helps us improve. It only takes a minute!</p>
+    </div>
+
+    <form id="reviewForm" novalidate>
+      <!-- Client Name -->
+      <div class="form-group">
+        <label for="clientName">Your Name</label>
+        <input
+          type="text"
+          id="clientName"
+          placeholder="e.g. John Smith"
+          autocomplete="name"
+        />
+        <span class="error-msg" id="nameError">Please enter your name.</span>
+      </div>
+
+      <!-- Star Rating -->
+      <div class="form-group">
+        <label>Rating</label>
+        <div class="star-group" role="radiogroup" aria-label="Star rating">
+          <input type="radio" id="star5" name="rating" value="5" />
+          <label for="star5" title="5 stars" aria-label="5 stars">★</label>
+
+          <input type="radio" id="star4" name="rating" value="4" />
+          <label for="star4" title="4 stars" aria-label="4 stars">★</label>
+
+          <input type="radio" id="star3" name="rating" value="3" />
+          <label for="star3" title="3 stars" aria-label="3 stars">★</label>
+
+          <input type="radio" id="star2" name="rating" value="2" />
+          <label for="star2" title="2 stars" aria-label="2 stars">★</label>
+
+          <input type="radio" id="star1" name="rating" value="1" />
+          <label for="star1" title="1 star" aria-label="1 star">★</label>
+        </div>
+        <span class="error-msg" id="ratingError">Please select a star rating.</span>
+      </div>
+
+      <!-- Written Review -->
+      <div class="form-group">
+        <label for="reviewText">Your Review</label>
+        <textarea
+          id="reviewText"
+          placeholder="Tell us about your experience..."
+        ></textarea>
+        <span class="error-msg" id="reviewError">Please write a review.</span>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" class="btn-submit">Submit Review ➤</button>
+    </form>
+  </div>
+
+  <script>
+    // ── Configuration ────────────────────────────────────────────────────────
+    // Replace with the business WhatsApp number before deployment.
+    // Format: country code followed by the number, no leading +, spaces, or dashes.
+    // Example: "923001234567" for Pakistan (+92 300 1234567)
+    //          "14155552671"  for USA     (+1 415 555 2671)
+    const WHATSAPP_NUMBER = "923001234567";
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+    function getStarEmojis(count) {
+      return "⭐".repeat(count);
+    }
+
+    function showError(el, msg) {
+      el.textContent = msg;
+      el.classList.add("visible");
+    }
+
+    function hideError(el) {
+      el.classList.remove("visible");
+    }
+
+    // ── Form submission ───────────────────────────────────────────────────────
+    document.getElementById("reviewForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const nameInput   = document.getElementById("clientName");
+      const reviewInput = document.getElementById("reviewText");
+      const nameError   = document.getElementById("nameError");
+      const ratingError = document.getElementById("ratingError");
+      const reviewError = document.getElementById("reviewError");
+
+      const name   = nameInput.value.trim();
+      const review = reviewInput.value.trim();
+      const ratingEl = document.querySelector('input[name="rating"]:checked');
+      const rating = ratingEl ? Number(ratingEl.value) : 0;
+
+      let valid = true;
+
+      if (!name) {
+        showError(nameError, "Please enter your name.");
+        valid = false;
+      } else {
+        hideError(nameError);
+      }
+
+      if (!rating) {
+        showError(ratingError, "Please select a star rating.");
+        valid = false;
+      } else {
+        hideError(ratingError);
+      }
+
+      if (!review) {
+        showError(reviewError, "Please write a review.");
+        valid = false;
+      } else {
+        hideError(reviewError);
+      }
+
+      if (!valid) return;
+
+      // Build the formatted review message
+      const message =
+        "Name: " + name + "\n" +
+        "Rating: " + getStarEmojis(rating) + "\n" +
+        "Review: " + review;
+
+      // Encode for URL and open WhatsApp
+      const encoded = encodeURIComponent(message);
+      const url = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + encoded;
+
+      const newWindow = window.open(url, "_blank", "noopener,noreferrer");
+      if (!newWindow) {
+        // Fallback when a popup blocker prevents window.open
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.click();
+      }
+    });
+
+    // ── Live validation clear on input ────────────────────────────────────────
+    document.getElementById("clientName").addEventListener("input", function () {
+      if (this.value.trim()) {
+        hideError(document.getElementById("nameError"));
+      }
+    });
+
+    document.getElementById("reviewText").addEventListener("input", function () {
+      if (this.value.trim()) {
+        hideError(document.getElementById("reviewError"));
+      }
+    });
+
+    document.querySelectorAll('input[name="rating"]').forEach(function (radio) {
+      radio.addEventListener("change", function () {
+        hideError(document.getElementById("ratingError"));
+      });
+    });
+  </script>
+</body>
+</html>
